@@ -292,9 +292,9 @@ public class EssentialMecanumRobot {
 
     /**
      * Drive the wheel motors to obtain the requested axes motions
-     * @param drive     Fwd/Rev axis power
-     * @param strafe    Left/Right axis power
-     * @param yaw       Yaw axis power
+     * @param drive     Fwd/Rev axis power     	+ve means forward
+     * @param strafe    Left/Right axis power	+ve means left
+     * @param yaw       Yaw axis power			+ve means CCW
      */
     public void moveRobot(double drive, double strafe, double yaw){
 
@@ -303,17 +303,18 @@ public class EssentialMecanumRobot {
         double lB = drive + strafe - yaw;
         double rB = drive - strafe + yaw;
 
-        double max = Math.max(Math.abs(lF), Math.abs(rF));
+        //normalize the motor values.  Make sure no motor values exceeds 100% power
+        double max = 1.0;
+        max = Math.max(max, Math.abs(lF));
+        max = Math.max(max, Math.abs(rF));
         max = Math.max(max, Math.abs(lB));
         max = Math.max(max, Math.abs(rB));
 
-        //normalize the motor values
-        if (max > 1.0)  {
-            lF /= max;
-            rF /= max;
-            lB /= max;
-            rB /= max;
-        }
+		// Scale by the max value (defaults to 1.0)
+        lF /= max;
+        rF /= max;
+        lB /= max;
+        rB /= max;
 
         //send power to the motors
         leftFrontDrive.setPower(lF);
